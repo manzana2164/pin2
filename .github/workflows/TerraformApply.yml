@@ -4,23 +4,19 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Agrega este bloque para habilitar la ejecución manual
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
   terraform_plan:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
-      - name: Install Terraform
-        env:
-          TERRAFORM_VERSION: "0.12.15"
-        run: |
-          tf_version=$TERRAFORM_VERSION
-          wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
-          unzip terraform_"$tf_version"_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3  # Use HashiCorp's action for setup
+        with:
+          terraform_version: "1.10.2"  # Specify the desired version of Terraform
 
       - name: Verify Terraform version
         run: terraform --version
@@ -39,7 +35,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Upload Plan Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: tfplan
           path: tfplan
@@ -49,25 +45,19 @@ jobs:
     needs: terraform_plan
     steps:
       - name: Request Approval
-        uses: hmarr/auto-approve-action@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        uses: hmarr/auto-approve-action@v2  # Ensure this is still relevant for your workflow
 
   terraform_apply:
     runs-on: ubuntu-latest
     needs: approval
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
       
-      - name: Install Terraform
-        env:
-          TERRAFORM_VERSION: "0.12.15"
-        run: |
-          tf_version=$TERRAFORM_VERSION
-          wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
-          unzip terraform_"$tf_version"_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3  # Use HashiCorp's action for setup
+        with:
+          terraform_version: "1.10.2"  # Specify the desired version of Terraform
 
       - name: Verify Terraform version
         run: terraform --version
@@ -79,7 +69,7 @@ jobs:
         run: terraform init -input=false
 
       - name: Download Plan Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3  # Updated to v3
         with:
           name: tfplan
 
