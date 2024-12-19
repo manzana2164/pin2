@@ -36,8 +36,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-            ref: ${{ github.event.pull_request.head.sha }} # se refiere al commit más reciente del branch de origen del PR (es decir, el branch desde el cual se hizo el pull request).
-            # ref: ${{ github.sha }} # github.sha hace referencia al commit hash del evento actual, que es el commit específico que activó el workflow. En el caso de un push o un pull_request, este es el commit que causó que el workflow se ejecutara.
+            ref: ${{ github.event.pull_request.head.sha }}
             submodules: true
             fetch-depth: 1
 
@@ -55,6 +54,10 @@ jobs:
 
       - name: Verify Terraform version
         run: terraform --version
+
+      - name: Clean previous tfplan
+        run: |
+          rm -f tfplan
 
       - name: Terraform init
         run: terraform init -input=false
@@ -92,6 +95,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
+
+      - name: Verify Terraform Providers
+        run: terraform providers
 
       - name: Terraform apply
         if: github.event_name == 'pull_request' || github.event_name == 'push'
