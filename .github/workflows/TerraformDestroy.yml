@@ -50,12 +50,6 @@ jobs:
      id: plan
      run: terraform plan -out=tfplan
 
-   - name: Upload Plan Artifact
-     uses: actions/upload-artifact@v4
-     with:
-       name: tfplan
-       path: tfplan
-
    - name: Terraform Apply
      if: github.event_name == 'pull_request' || github.event_name == 'push'
      run: terraform apply -auto-approve tfplan
