@@ -1,12 +1,6 @@
 name: TerraformApply
 
-on:
-  push:
-    branches:
-      - main
-  pull_request: 
-    branches:
-      - main
+on: [push]
     
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -15,7 +9,7 @@ env:
 permissions:
   id-token: write
   contents: read
-  pull-requests: write  
+#  pull-requests: write  
 
 jobs:
   AssumeRole:
@@ -71,17 +65,17 @@ jobs:
           name: tfplan
           path: tfplan
 
-  approval:
-    runs-on: ubuntu-latest
-    needs: terraform_plan
+#  approval:
+ #   runs-on: ubuntu-latest
+  #  needs: terraform_plan
 #    if: github.event_name == 'pull_request'  
-    steps:
-      - name: Request Approval
-        uses: hmarr/auto-approve-action@v4 
+   # steps:
+    #  - name: Request Approval
+     #   uses: hmarr/auto-approve-action@v4 
 
   terraform_apply:
     runs-on: ubuntu-latest
-    needs: approval
+    needs: terraform_plan
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
