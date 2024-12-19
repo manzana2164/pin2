@@ -79,3 +79,7 @@ jobs:
       - name: Terraform Apply
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
+
+      - name: Show the Webserver Public IP
+        run: |
+          echo "Webserver Public IP: $(terraform output -raw Webserver-Public-IP)"
