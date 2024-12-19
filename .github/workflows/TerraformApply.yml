@@ -60,7 +60,7 @@ jobs:
           rm -f tfplan
 
       - name: Terraform init
-        run: terraform init -input=false
+        run: terraform init -input=false -reconfigure
 
       - name: Terraform validation
         run: terraform validate
