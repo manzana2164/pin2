@@ -1,35 +1,46 @@
 name: TerraformApply
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push]
 
-permissions: # Agregar los permisos aquí
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  IAM_ROLE: ${{ secrets.IAM_ROLE }}
+  
+permissions: 
   id-token: write
   contents: read
 
 jobs:
+  AssumeRole:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CloneRepository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.IAM_ROLE }}
+          role-session-name: github-actions-federation
+          aws-region: ${{ env.AWS_REGION }} 
+
   terraform_plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'us-east-1'
-          role-to-assume: arn:aws:iam::905418008126:role/GitHubActionsRole 
+          role-to-assume: ${{ env.IAM_ROLE }}
           role-session-name: github-actions-federation
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.0"
+          terraform_version: "1.10.2"
 
       - name: Verify Terraform version
         run: terraform --version
@@ -62,15 +73,14 @@ jobs:
     needs: approval
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'us-east-1'
-          role-to-assume: arn:aws:iam::<your-account-id>:role/<your-role-name>
+          role-to-assume: ${{ env.IAM_ROLE }}
+          role-session-name: github-actions-federation
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Download Plan Artifact
         uses: actions/download-artifact@v3
