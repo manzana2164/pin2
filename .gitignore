@@ -8,10 +8,6 @@
 # Directorios de configuración de Terraform
 .terraform/
 
-# Archivos de lock de Terraform
-terraform.lock.hcl
-.terraform.lock.hcl
-
 # Archivos de salida generados por terraform plan
 plan.out
 
