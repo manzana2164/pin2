@@ -1,7 +1,13 @@
 name: TerraformApply
 
-on: [push]
-    
+on: 
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches:
+      - master
+      
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   IAM_ROLE: ${{ secrets.IAM_ROLE }}
@@ -29,6 +35,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+            ref: ${{ github.event.pull_request.head.sha }} # se refiere al commit más reciente del branch de origen del PR (es decir, el branch desde el cual se hizo el pull request).
+            # ref: ${{ github.sha }} # github.sha hace referencia al commit hash del evento actual, que es el commit específico que activó el workflow. En el caso de un push o un pull_request, este es el commit que causó que el workflow se ejecutara.
+            submodules: true
+            fetch-depth: 1
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -52,6 +63,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform plan
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
         id: plan
         run: terraform plan -out=tfplan
 
@@ -82,4 +94,5 @@ jobs:
           name: tfplan
 
       - name: Terraform apply
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
