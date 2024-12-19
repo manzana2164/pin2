@@ -48,6 +48,9 @@ jobs:
       - name: Terraform init
         run: terraform init -input=false
 
+      - name: Force Unlock Terraform State (if needed)
+        run: terraform force-unlock -force <0a272ffa-cd11-a59a-ed94-8d6144936c7a>
+        
       - name: Terraform validation
         run: terraform validate
 
