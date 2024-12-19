@@ -5,8 +5,8 @@ on: [push]
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   IAM_ROLE: ${{ secrets.IAM_ROLE }}
-  
-permissions: 
+
+permissions:
   id-token: write
   contents: read
 
@@ -22,7 +22,7 @@ jobs:
         with:
           role-to-assume: ${{ env.IAM_ROLE }}
           role-session-name: github-actions-federation
-          aws-region: ${{ env.AWS_REGION }} 
+          aws-region: ${{ env.AWS_REGION }}
 
   terraform_plan:
     runs-on: ubuntu-latest
@@ -49,8 +49,8 @@ jobs:
         run: terraform init -input=false
 
       - name: Force Unlock Terraform State (if needed)
-        run: terraform force-unlock -force <0a272ffa-cd11-a59a-ed94-8d6144936c7a>
-        
+        run: terraform force-unlock -force 0a272ffa-cd11-a59a-ed94-8d6144936c7a
+
       - name: Terraform validation
         run: terraform validate
 
@@ -77,7 +77,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
