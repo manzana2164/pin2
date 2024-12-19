@@ -76,26 +76,6 @@ jobs:
           name: tfplan
           path: tfplan
 
-
-  terraform_apply:
-    runs-on: ubuntu-latest
-    needs: terraform_plan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.IAM_ROLE }}
-          role-session-name: github-actions-federation
-          aws-region: ${{ env.AWS_REGION }}
-          
-      - name: Download Plan Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan         
-         
-      - name: Terraform apply
+      - name: Terraform Apply
         if: github.event_name == 'pull_request' || github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
