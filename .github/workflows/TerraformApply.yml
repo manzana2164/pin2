@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # Agrega este bloque para habilitar la ejecución manual
 
 jobs:
   terraform_plan:
