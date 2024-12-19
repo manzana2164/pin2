@@ -18,12 +18,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-1'
-          role-to-assume: arn:aws:iam::905418008126:role/GitHubActionsRole # Replace with your role ARN
+          role-to-assume: arn:aws:iam::905418008126:role/GitHubActionsRole 
+          role-session-name: github-actions-federation
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
