@@ -47,10 +47,12 @@ jobs:
           role-session-name: github-actions-federation
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.10.2"
+      - name: Install Terraform
+        run: |
+          tf_version=$TERRAFORM_VERSION
+          wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
+          unzip terraform_"$tf_version"_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
 
       - name: Verify Terraform version
         run: terraform --version
@@ -83,21 +85,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.IAM_ROLE }}
-          role-session-name: github-actions-federation
-          aws-region: ${{ env.AWS_REGION }}
-
+      
       - name: Download Plan Artifact
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-
-      - name: Verify Terraform Providers
-        run: terraform providers
 
       - name: Terraform apply
         if: github.event_name == 'pull_request' || github.event_name == 'push'
