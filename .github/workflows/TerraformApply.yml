@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions: # Agregar los permisos aquí
+  id-token: write
+  contents: read
+
 jobs:
   terraform_plan:
     runs-on: ubuntu-latest
@@ -72,7 +76,5 @@ jobs:
         with:
           name: tfplan
 
-      - name: Terraform apply
-        run: terraform apply -auto-approve tfplan
       - name: Terraform apply
         run: terraform apply -auto-approve tfplan
