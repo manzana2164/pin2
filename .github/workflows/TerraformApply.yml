@@ -2,12 +2,8 @@ name: TerraformApply
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
-
+    
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   IAM_ROLE: ${{ secrets.IAM_ROLE }}
